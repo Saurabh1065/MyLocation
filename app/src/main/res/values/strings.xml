@@ -4,6 +4,7 @@
         <string name="app_name">MyLocation</string>
         <string name="lbl_you_are_at">YOU ARE AT</string>
         <string name="btn_get_location">GET MY LOCATION</string>
+        <string name="btn_openMap">Show In MAP</string>
 
 
     </resources>

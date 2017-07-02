@@ -1,5 +1,11 @@
 package com.apkglobal.mylocation;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -22,12 +28,8 @@ import android.widget.Toast;
 public class MainActivity extends Activity implements ConnectionCallbacks,OnConnectionFailedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-
     private Location mLastLocation;
-
-
     private GoogleApiClient mGoogleApiClient;
     private boolean mRequestingLocationUpdates = false;
     private LocationRequest mLocationRequest;
@@ -35,7 +37,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,OnConn
     private static int FATEST_INTERVAL = 5000;
     private static int DISPLACEMENT = 10;
     private TextView lblLocation;
-    private Button btnShowLocation;
+    private Button btnShowLocation,openmap;
+    private int pid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,OnConn
 
         lblLocation = (TextView) findViewById(R.id.lblLocation);
         btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
+        openmap=(Button)findViewById(R.id.btnOpenMap);
+
+
 
 
         // First we need to check availability of play services
@@ -59,9 +65,14 @@ public class MainActivity extends Activity implements ConnectionCallbacks,OnConn
             @Override
             public void onClick(View v) {
                 displayLocation();
+                callatruntime();
             }
+
+
         });
     }
+
+
 
     /**
      * Method to display the location on UI
@@ -82,6 +93,38 @@ public class MainActivity extends Activity implements ConnectionCallbacks,OnConn
                     .setText("(Couldn't get the location. Make sure location is enabled on the device)");
         }
     }
+    public void callatruntime(){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M&&
+                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},pid);
+        }
+        else
+        {
+            Toast.makeText(this, "Location Permission Granted", Toast.LENGTH_SHORT).show();
+
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode==pid)
+        {
+            if (
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+
+                    ) {
+                callatruntime();
+
+            } else {
+                Toast.makeText(getApplicationContext(),"Not Granted",Toast.LENGTH_LONG).show();
+            }
+
+
+        }
+    }
+
+
+
 
     /**
      * Creating google api client object
