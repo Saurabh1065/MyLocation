@@ -50,78 +50,69 @@ public class MainActivity extends Activity implements ConnectionCallbacks,OnConn
         openmap=(Button)findViewById(R.id.btnOpenMap);
 
 
-
-
         // First we need to check availability of play services
         if (checkPlayServices()) {
-
             // Building the GoogleApi client
             buildGoogleApiClient();
         }
-
         // Show location button click listener
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 displayLocation();
                 callatruntime();
             }
-
-
+        });
+        openmap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?q=loc:" + mLastLocation.getLatitude() + "," + mLastLocation.getLongitude()));
+                intent.setPackage("com.google.android.apps.maps");
+                startActivity(intent);
+            }
         });
     }
-
-
-
     /**
      * Method to display the location on UI
      * */
-    private void displayLocation() {
+        private void displayLocation() {
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-        if (mLastLocation != null) {
-            double latitude = mLastLocation.getLatitude();
-            double longitude = mLastLocation.getLongitude();
-
-            lblLocation.setText(latitude + ", " + longitude);
-
-        } else {
-
-            lblLocation
-                    .setText("(Couldn't get the location. Make sure location is enabled on the device)");
-        }
-    }
-    public void callatruntime(){
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M&&
-                checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-        {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},pid);
-        }
-        else
-        {
-            Toast.makeText(this, "Location Permission Granted", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode==pid)
-        {
-            if (
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-
-                    ) {
-                callatruntime();
-
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                double latitude = mLastLocation.getLatitude();
+                double longitude = mLastLocation.getLongitude();
+                lblLocation.setText(latitude + ", " + longitude);
             } else {
-                Toast.makeText(getApplicationContext(),"Not Granted",Toast.LENGTH_LONG).show();
+                lblLocation
+                        .setText("(Couldn't get the location. Make sure location is enabled on the device)");
             }
-
-
         }
-    }
+        public void callatruntime(){
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M&&
+                    checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},pid);
+            }
+            else
+            {
+                Toast.makeText(this, "Location Permission Granted", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            if(requestCode==pid)
+            {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    {
+                        callatruntime();
+
+                    } else {
+                        Toast.makeText(getApplicationContext(),"Not Granted",Toast.LENGTH_LONG).show();
+                    }
+
+            }
+        }
 
 
 
